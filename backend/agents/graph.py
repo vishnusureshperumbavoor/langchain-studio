@@ -15,10 +15,15 @@ class ResearchState(TypedDict):
 # Nodes
 def planner(state: ResearchState):
     llm = ChatOpenAI(model="gpt-4o-mini")
-    prompt = f"You are a Research Planner. Topic: {state['topic']}. Break this into 3 specific sub-questions to research."
+    prompt = f"You are a Research Planner. Topic: {state['topic']}. Break this into 3 specific sub-questions to research. Return ONLY the questions, one per line."
     response = llm.invoke([HumanMessage(content=prompt)])
-    # In a real app, we'd parse this into a list. For now, let's simulate a list.
-    questions = response.content.split("\n")
+    # Clean up the questions: remove numbers, empty lines, and whitespace
+    raw_questions = response.content.split("\n")
+    questions = [q.strip() for q in raw_questions if q.strip()]
+    # Remove common list prefixes like "1. ", "- ", etc.
+    import re
+    questions = [re.sub(r'^\d+\.\s*|-\s*', '', q) for q in questions]
+    
     return {
         "plan": questions,
         "logs": [f"Created research plan with {len(questions)} steps."]
@@ -29,13 +34,14 @@ from backend.tools.search import web_search, arxiv_search
 def researcher(state: ResearchState):
     results = []
     for query in state["plan"]:
-        # Use web search for everything for now, can be optimized later
+        if not query.strip():
+            continue
         res = web_search.invoke(query)
         results.append(f"Source: Web\nQuery: {query}\nResult: {res}")
     
     return {
         "results": results,
-        "logs": [f"Completed research for {len(state['plan'])} sub-topics."]
+        "logs": [f"Completed research for {len(results)} sub-topics."]
     }
 
 def synthesizer(state: ResearchState):

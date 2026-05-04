@@ -2,6 +2,10 @@
 
 InsightEngine is an open-source, multi-agent research agent designed to demonstrate the power of **LangGraph**, **LangChain**, and **LangSmith**. It autonomously plans, searches, and synthesizes complex topics into professional Markdown reports.
 
+## 📺 Project Demo
+[![InsightEngine Demo](https://img.youtube.com/vi/JhdqFnx4UMY/maxresdefault.jpg)](https://www.youtube.com/watch?v=JhdqFnx4UMY)
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
